@@ -32,7 +32,6 @@ public class Main {
                     JsonNode rootNode = mapper.readTree(content);
                     JsonNode entitiesNode = rootNode.get("Entities");
 
-
 //
 ////                    If want to print whole object with score less then 90%
 //
@@ -48,7 +47,6 @@ public class Main {
 //                    }
 //
 //
-
 
                     // If want to print only text and score
 //
@@ -69,7 +67,6 @@ public class Main {
                         }
 
                     }
-
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);
