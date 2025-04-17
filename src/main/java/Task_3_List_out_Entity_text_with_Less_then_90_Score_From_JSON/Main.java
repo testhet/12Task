@@ -1,4 +1,5 @@
 package Task_3_List_out_Entity_text_with_Less_then_90_Score_From_JSON;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,9 +17,9 @@ public class Main {
         Path Folder_path = Paths.get("/home/hetgoti/Downloads/Problem_Input/3/AmazonMed_Json/");
         ObjectMapper mapper = new ObjectMapper();
 
-        try(Stream<Path> Jsons = Files.walk(Folder_path)) {
+        try (Stream<Path> Jsons = Files.walk(Folder_path)) {
             Jsons.filter(Files::isRegularFile).forEach(Path -> {
-                System.out.println("Reading "+Path.getFileName()+" File");
+                System.out.println("Reading " + Path.getFileName() + " File");
 
                 try {
 
@@ -28,13 +29,13 @@ public class Main {
                         System.out.println("Skipping empty file: " + Path.getFileName());
                         return; // skip this file
                     }
-               JsonNode rootNode = mapper.readTree(content);
+                    JsonNode rootNode = mapper.readTree(content);
                     JsonNode entitiesNode = rootNode.get("Entities");
 
 
-
-                    //If want to print whole object with score less then 90%
-
+//
+////                    If want to print whole object with score less then 90%
+//
 //                    if(entitiesNode != null && entitiesNode.isArray()){
 //                        for (JsonNode entity : entitiesNode) {
 //                            JsonNode ScoreNode = entity.get("Score");
@@ -45,24 +46,23 @@ public class Main {
 //                            }
 //                        }
 //                    }
+//
+//
 
 
-
-
-
-                // If want to print only text and score
-
-
-                    if(entitiesNode != null && entitiesNode.isArray()){
-                        for(JsonNode entity : entitiesNode){
+                    // If want to print only text and score
+//
+//
+                    if (entitiesNode != null && entitiesNode.isArray()) {
+                        for (JsonNode entity : entitiesNode) {
                             JsonNode ScoreNode = entity.get("Score");
                             JsonNode TextNode = entity.get("Text");
 
 
-                            if(ScoreNode != null && ScoreNode.asDouble() < 0.90){
+                            if (ScoreNode != null && ScoreNode.asDouble() < 0.90) {
 
-                                System.out.println("Score: "+ScoreNode.asDouble());
-                                System.out.println("Text: "+TextNode.asText());
+                                System.out.println("Score: " + ScoreNode.asDouble());
+                                System.out.println("Text: " + TextNode.asText());
                                 System.out.println("__________________________");
 
                             }
