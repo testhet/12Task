@@ -31,7 +31,7 @@ public class Main {
 
         //select delimiter based on file type || dile ends with .txt OR .csv OR .tsv
 
-        if (fileName.endsWith(".csv")) {
+        if (fileName.toLowerCase().endsWith(".csv")) {
             delimiter = ",";
         } else if (fileName.endsWith(".txt") || fileName.endsWith(".tsv")) {
             delimiter = "\t";
