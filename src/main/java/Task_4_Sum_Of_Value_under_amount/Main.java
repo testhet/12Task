@@ -33,7 +33,7 @@ public class Main {
 
         if (fileName.toLowerCase().endsWith(".csv")) {
             delimiter = ",";
-        } else if (fileName.endsWith(".txt") || fileName.endsWith(".tsv")) {
+        } else if (fileName.toLowerCase().endsWith(".txt") || fileName.toLowerCase().endsWith(".tsv")) {
             delimiter = "\t";
         } else {
             System.out.println("Unsupported file");
