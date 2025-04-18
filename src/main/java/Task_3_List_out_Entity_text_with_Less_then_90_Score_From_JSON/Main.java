@@ -61,7 +61,7 @@ public class Main {
 
                                 System.out.println("Score: " + ScoreNode.asDouble());
                                 System.out.println("Text: " + TextNode.asText());
-                                System.out.println("__________________________");
+                                System.out.println("___________________________");
 
                             }
                         }
