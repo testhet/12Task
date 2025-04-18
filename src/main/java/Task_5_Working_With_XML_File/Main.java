@@ -21,42 +21,76 @@ public class Main {
         Path filePath = Paths.get("/home/hetgoti/Downloads/Problem_Input/5/");
 
         try (Stream<Path> files = Files.walk(filePath)) {
-            files.filter(Files::isRegularFile)
-                    .forEach(path -> {
-                        System.out.println(path.getFileName());
-                        try{
-                            File inputFile = new File(path.toFile().toURI());
-                            // create document builder
-                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                            DocumentBuilder builder = factory.newDocumentBuilder();
+            files.filter(Files::isRegularFile).forEach(path -> {
+                System.out.println(path.getFileName());
+                try {
+                    File inputFile = new File(path.toFile().toURI());
+                    // create document builder
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
 
-                            //parse XMl data in document object
-                            Document document = builder.parse(inputFile);
-                            document.getDocumentElement().normalize();
+                    //parse XMl data in document object
+                    Document document = builder.parse(inputFile);
+                    document.getDocumentElement().normalize();
 
-                            NodeList icd10CmCodeList = document.getElementsByTagName("Icd10CmCode");
-                            for (int i = 0; i < icd10CmCodeList.getLength(); i++) {
-                                Node icdNode = icd10CmCodeList.item(i);
-                                if (icdNode.getNodeType() == Node.ELEMENT_NODE) {
-                                    Element icdElement = (Element) icdNode;
+                    NodeList icd10CmCodeList = document.getElementsByTagName("Icd10CmCode");
+                    for (int i = 0; i < icd10CmCodeList.getLength(); i++) {
+                        Node icdNode = icd10CmCodeList.item(i);
+                        if (icdNode.getNodeType() == Node.ELEMENT_NODE) {
 
-                                    // Get the <code> element inside
-                                    Element codeElement = (Element) icdElement.getElementsByTagName("code").item(0);
-                                    if (codeElement != null) {
-                                        String codeValue = codeElement.getAttribute("value");
-                                        String rankValue = codeElement.getAttribute("rank");
+                            Element icdElement = (Element) icdNode;
 
-                                        System.out.println("Code: " + codeValue);
-                                        System.out.println("Rank: " + rankValue);
-                                    } else {
-                                        System.out.println("Missing <code> element");
-                                    }
+
+                            NodeList codeNodes = icdElement.getElementsByTagName("code");
+
+                            Element bestCode = null;
+                            int maxRank = Integer.MIN_VALUE;
+
+                            for (int j = 0; j < codeNodes.getLength(); j++) {
+                                Element codeElement = (Element) codeNodes.item(j);
+                                String rankStr = codeElement.getAttribute("rank");
+
+                                int rank;
+
+                                try {
+                                    rank = Integer.parseInt(rankStr);
+                                } catch (NumberFormatException e) {
+                                    throw new RuntimeException(e);
+                                }
+
+                                if (rank > maxRank) {
+                                    maxRank = rank;
+                                    bestCode = codeElement;
                                 }
                             }
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            if (bestCode != null) {
+                                String codeValue = bestCode.getAttribute("value");
+                                String rankValue = bestCode.getAttribute("rank");
+
+                                System.out.println("Code: " + codeValue);
+                                System.out.println("Rank: " + rankValue);
+                            } else {
+                                System.out.println("Missing <code> element");
+                            }
+
+                            // Get the <code> element inside
+//                            Element codeElement = (Element) icdElement.getElementsByTagName("code").item(0);
+//                            if (codeElement != null) {
+//                                String codeValue = codeElement.getAttribute("value");
+//                                String rankValue = codeElement.getAttribute("rank");
+//
+//                                System.out.println("Code: " + codeValue);
+//                                System.out.println("Rank: " + rankValue);
+//                            } else {
+//                                System.out.println("Missing <code> element");
+//                            }
+
                         }
-                    });
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace(); // Better than RuntimeException for debugging
         }
