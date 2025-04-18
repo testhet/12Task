@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Stream;
 
 public class Main {
@@ -22,9 +25,13 @@ public class Main {
 
         try (Stream<Path> files = Files.walk(filePath)) {
             files.filter(Files::isRegularFile).forEach(path -> {
-                System.out.println(path.getFileName());
+                System.out.println("reading : "  + path.getFileName());
                 try {
+
+                    //can use File inputFile = path.toFile() also but toURI() will add safety like converts space in to %20 encode # and ?
                     File inputFile = new File(path.toFile().toURI());
+
+
                     // create document builder
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
@@ -39,51 +46,14 @@ public class Main {
                         if (icdNode.getNodeType() == Node.ELEMENT_NODE) {
 
                             Element icdElement = (Element) icdNode;
+                            Element bestCode = getElement(icdElement);
 
 
-                            NodeList codeNodes = icdElement.getElementsByTagName("code");
-
-                            Element bestCode = null;
-                            int maxRank = Integer.MIN_VALUE;
-
-                            for (int j = 0; j < codeNodes.getLength(); j++) {
-                                Element codeElement = (Element) codeNodes.item(j);
-                                String rankStr = codeElement.getAttribute("rank");
-
-                                int rank;
-
-                                try {
-                                    rank = Integer.parseInt(rankStr);
-                                } catch (NumberFormatException e) {
-                                    throw new RuntimeException(e);
-                                }
-
-                                if (rank > maxRank) {
-                                    maxRank = rank;
-                                    bestCode = codeElement;
-                                }
-                            }
-                            if (bestCode != null) {
                                 String codeValue = bestCode.getAttribute("value");
                                 String rankValue = bestCode.getAttribute("rank");
 
-                                System.out.println("Code: " + codeValue);
-                                System.out.println("Rank: " + rankValue);
-                            } else {
-                                System.out.println("Missing <code> element");
-                            }
-
-                            // Get the <code> element inside
-//                            Element codeElement = (Element) icdElement.getElementsByTagName("code").item(0);
-//                            if (codeElement != null) {
-//                                String codeValue = codeElement.getAttribute("value");
-//                                String rankValue = codeElement.getAttribute("rank");
-//
-//                                System.out.println("Code: " + codeValue);
-//                                System.out.println("Rank: " + rankValue);
-//                            } else {
-//                                System.out.println("Missing <code> element");
-//                            }
+                                System.out.print("Code: " + codeValue);
+                                System.out.println(" Rank: " + rankValue);
 
                         }
                     }
@@ -94,5 +64,46 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace(); // Better than RuntimeException for debugging
         }
+    }
+
+    private static Element getElement(Element icdNode) {
+
+
+        NodeList codeNodes = icdNode.getElementsByTagName("code");
+        List<Element> codeWithMaxRank = new ArrayList<>();
+
+        Element bestCode = null;
+        int maxRank = Integer.MIN_VALUE;
+
+        for (int j = 0; j < codeNodes.getLength(); j++) {
+            Element codeElement = (Element) codeNodes.item(j);
+            String rankStr = codeElement.getAttribute("rank");
+
+            int rank;
+
+            try {
+                rank = Integer.parseInt(rankStr);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (rank > maxRank) {
+                maxRank = rank;
+
+                codeWithMaxRank.clear();
+                codeWithMaxRank.add(codeElement);
+            } else if (rank == maxRank) {
+
+                codeWithMaxRank.add(codeElement);
+            }
+            if(!codeWithMaxRank.isEmpty()){
+                Random random = new Random();
+                int arrSize = codeWithMaxRank.size();
+                int randomCode = random.nextInt(arrSize);
+                bestCode = codeWithMaxRank.get(randomCode);
+            }
+
+        }
+        return bestCode;
     }
 }
