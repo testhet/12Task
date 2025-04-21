@@ -2,8 +2,10 @@ package Task_2_Count_Number_of_line_starts_with_THE_from_text_file;
 
 
 
+
 import java.nio.file.*;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 
@@ -15,22 +17,21 @@ public class Main {
 
         try (Stream<Path> test = Files.walk(filepath)) {
 
-            test.forEach(Path -> {
-                        System.out.println("Reading file: " + Path);
+            test.filter(Files::isRegularFile).forEach(path -> {
+                        System.out.println("Reading file: " + path);
                         try {
-                            List<String> lines = Files.readAllLines(Path); // Read all lines
+                            List<String> lines = Files.readAllLines(path); // Read all lines
 
+                            Pattern pattern = Pattern.compile("^\\s*the\\b", Pattern.CASE_INSENSITIVE);
                             long count = lines.stream()
-                                    .filter(line -> line.trim().toLowerCase().startsWith("the"))
-                                    .count();
-                            System.out.println("Number Of Lines starting with 'the': " + count);
+                                    .filter(line -> pattern.matcher(line).find()).count();
+
+                            System.out.println("Number Of Lines starting with 'the' \nUsing Regex : " + count);
 
                         } catch (Exception e) {
-                            System.err.println("Could not read file: " + Path);
-
+                            System.err.println("Could not read file: " + path);
                         }
                     });
-
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
