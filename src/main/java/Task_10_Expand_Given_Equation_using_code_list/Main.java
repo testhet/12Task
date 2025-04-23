@@ -18,7 +18,8 @@ public class Main {
 
             while ((line = br.readLine()) != null){
 
-                System.out.println(line);
+
+
 
             }
         }
