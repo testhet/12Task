@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class Main {
     public static void main(String[] args) throws IOException {
        Path filePath = Paths.get("/home/hetgoti/Downloads/Problem_Input/11/TextDocument");
-        Pattern pattern1 = Pattern.compile("(\\bBMI|(?i)\\bB\\w*\\s+M\\w*\\s+I\\w*\\b).*?(\\d+(\\.\\d*)?)");
+        Pattern pattern1 = Pattern.compile("(?i)(\\bBMI|\\bB\\w*\\s+M\\w*\\s+I\\w*\\b).*?(\\d+(\\.\\d*)?)");
 
        try(BufferedReader br = Files.newBufferedReader(filePath)){
             int count = 0;
