@@ -2,53 +2,105 @@ package Task_10_Expand_Given_Equation_using_code_list;
 
 
 import java.io.BufferedReader;
-
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class Main {
-    public static void main(String[] args) throws IOException {
-        Path icdCodes = Paths.get("/home/hetgoti/Downloads/Problem_Input/10/LatestIcd10Codes");
-        Path equationFile = Paths.get("/home/hetgoti/Downloads/Problem_Input/10/Equations");
+    private static final Set<String> icd10codeslist = new HashSet<>();
 
-        //read alll icd codes in list
-        List<String> icdcodes = Files.readAllLines(icdCodes);
+    public static void loadicd10codes() {
 
-
-        Pattern pattern = Pattern.compile("([A-Z0-9]+)(?=\\.\\*)");
-
-        try (BufferedReader br = Files.newBufferedReader(equationFile)) {
+        try (BufferedReader br = new BufferedReader(new FileReader("/home/hetgoti/Downloads/Problem_Input/10/LatestIcd10Codes"))) {
             String line;
-            Set<String> basecode = new HashSet<>();
 
             while ((line = br.readLine()) != null) {
-                Matcher matcher = pattern.matcher(line);
-                while (matcher.find()) {
-                    basecode.add(matcher.group(1));
-                }
+                icd10codeslist.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error Reading File: " + e.getMessage());
+        }
+    }
 
-                String updateline;
-                for (String base : basecode) {
-                    for (String icd : icdcodes) {
-                        if (icd.startsWith(base)) {
-                            updateline = line.replaceAll(Pattern.quote(base + ".*"), Matcher.quoteReplacement(icd));
-                            System.out.println(updateline);
-                        }
+    public static void main(String[] args) throws IOException {
+        loadicd10codes();
 
+        try (BufferedReader br = new BufferedReader(new FileReader("/home/hetgoti/Downloads/Problem_Input/10/Equations"))) {
+            String str;
+            HashMap<String , List<String>> eq_icd_pair = new HashMap<>();
+
+            try{
+                while ((str = br.readLine()) != null){
+                HashSet<String> sorted_equetion_tokens = Sort_Tokens(str);
+
+                for (String s : sorted_equetion_tokens){
+                    if(!eq_icd_pair.containsKey(s)){
+                        eq_icd_pair.put(s, List_of_tokens(s));
                     }
                 }
-
+                    System.out.println("------------------------------");
+                    printer(eq_icd_pair , str, new HashSet<>());
+                    System.out.println("------------------------------");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
+    } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    public static HashSet<String> Sort_Tokens (String str){
+        String[] s = str.split(" ");
+        HashSet<String> sorted_equetion_tokens = new HashSet<>();
+        for(String s1 : s){
+            if(s1.contains("*")) {
+                sorted_equetion_tokens.add(s1);
+            }
+        }
+        return sorted_equetion_tokens;
+    }
+
+
+    public static List<String> List_of_tokens(String s){
+        List<String> filteredIcdCodes = new ArrayList<>();
+        Pattern pattern = Pattern.compile(s);
+
+        for (String line : icd10codeslist) {
+            Matcher matcher = pattern.matcher(line);
+            if(matcher.find()){
+                filteredIcdCodes.add(line);
+            }
+        }
+        return filteredIcdCodes;
+    }
+
+    public static void printer (HashMap<String , List<String>> eq_icd_pair, String str,Set<String> expanded_eq) {
+
+        for (Map.Entry<String,List<String>> e : eq_icd_pair.entrySet()) {
+            List<String> listoftokens = e.getValue();
+            for(String s : listoftokens) {
+                String answer = str.replace(e.getKey(), s);
+                if(answer.contains("*")){
+                    HashMap<String, List<String>> newMap = new HashMap<>(eq_icd_pair);
+                    newMap.remove(e.getKey());
+                    printer(newMap, answer , expanded_eq);
+                } else {
+                    if (!expanded_eq.contains(answer)){
+                        System.out.println(answer);
+                        expanded_eq.add(answer);
+                    }
+                }
+            }
         }
 
     }
+
+
 }
