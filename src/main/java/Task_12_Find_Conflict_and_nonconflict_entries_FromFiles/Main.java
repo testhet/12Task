@@ -54,10 +54,49 @@ public class Main {
             throw new RuntimeException(e);
         }
 
+        HashMap<String , Integer> countValue = new HashMap<>();
+        for (Set<String> set : myMap.values()){
+            for (String value : set){
+                countValue.put(value, countValue.getOrDefault(value , 0) + 1);
+            }
+        }
 
-        System.out.println("\nFinal Grouping (using Set):");
+
+        // To separate unique and conflict values
+        Set<String> uniqueValues = new HashSet<>();
+        Set<String> conflictValues = new HashSet<>();
+
+        // Iterate through the countMap to categorize values
+        for (Map.Entry<String, Integer> entry : countValue.entrySet()) {
+            if (entry.getValue() == 1) {
+                uniqueValues.add(entry.getKey());  // Value appears only once in the entire HashMap
+            } else {
+                conflictValues.add(entry.getKey());  // Value appears in multiple sets (conflict)
+            }
+        }
+
+        // Print the results for unique values, along with the key
+        System.out.println("Unique Values:");
         for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
+            String key = entry.getKey();
+            Set<String> values = entry.getValue();
+            for (String value : values) {
+                if (uniqueValues.contains(value)) {
+                    System.out.println(key + " -> " + value);  // Print key and unique value
+                }
+            }
+        }
+
+        // Print the results for conflict values, along with the key
+        System.out.println("\nConflict Values:");
+        for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
+            String key = entry.getKey();
+            Set<String> values = entry.getValue();
+            for (String value : values) {
+                if (conflictValues.contains(value)) {
+                    System.out.println(key + " -> " + value);  // Print key and conflict value
+                }
+            }
         }
     }
 }
