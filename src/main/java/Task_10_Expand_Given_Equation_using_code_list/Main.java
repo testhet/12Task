@@ -31,36 +31,36 @@ public class Main {
 
         try (BufferedReader br = new BufferedReader(new FileReader("/home/hetgoti/Downloads/Problem_Input/10/Equations"))) {
             String str;
-            HashMap<String , List<String>> eq_icd_pair = new HashMap<>();
+            HashMap<String, List<String>> eq_icd_pair = new HashMap<>();
 
-            try{
-                while ((str = br.readLine()) != null){
-                HashSet<String> sorted_equetion_tokens = Sort_Tokens(str);
+            try {
+                while ((str = br.readLine()) != null) {
+                    HashSet<String> sorted_equetion_tokens = Sort_Tokens(str);
 
-                for (String s : sorted_equetion_tokens){
-                    if(!eq_icd_pair.containsKey(s)){
-                        eq_icd_pair.put(s, List_of_tokens(s));
+                    for (String s : sorted_equetion_tokens) {
+                        if (!eq_icd_pair.containsKey(s)) {
+                            eq_icd_pair.put(s, List_of_tokens(s));
+                        }
                     }
-                }
                     System.out.println("------------------------------");
-                    printer(eq_icd_pair , str, new HashSet<>());
+                    printer(eq_icd_pair, str, new HashSet<>());
                     System.out.println("------------------------------");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-    } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
 
 
-    public static HashSet<String> Sort_Tokens (String str){
+    public static HashSet<String> Sort_Tokens(String str) {
         String[] s = str.split(" ");
         HashSet<String> sorted_equetion_tokens = new HashSet<>();
-        for(String s1 : s){
-            if(s1.contains("*")) {
+        for (String s1 : s) {
+            if (s1.contains("*")) {
                 sorted_equetion_tokens.add(s1);
             }
         }
@@ -68,31 +68,31 @@ public class Main {
     }
 
 
-    public static List<String> List_of_tokens(String s){
+    public static List<String> List_of_tokens(String s) {
         List<String> filteredIcdCodes = new ArrayList<>();
         Pattern pattern = Pattern.compile(s);
 
         for (String line : icd10codeslist) {
             Matcher matcher = pattern.matcher(line);
-            if(matcher.find()){
+            if (matcher.find()) {
                 filteredIcdCodes.add(line);
             }
         }
         return filteredIcdCodes;
     }
 
-    public static void printer (HashMap<String , List<String>> eq_icd_pair, String str,Set<String> expanded_eq) {
+    public static void printer(HashMap<String, List<String>> eq_icd_pair, String str, Set<String> expanded_eq) {
 
-        for (Map.Entry<String,List<String>> e : eq_icd_pair.entrySet()) {
+        for (Map.Entry<String, List<String>> e : eq_icd_pair.entrySet()) {
             List<String> listoftokens = e.getValue();
-            for(String s : listoftokens) {
+            for (String s : listoftokens) {
                 String answer = str.replace(e.getKey(), s);
-                if(answer.contains("*")){
+                if (answer.contains("*")) {
                     HashMap<String, List<String>> newMap = new HashMap<>(eq_icd_pair);
                     newMap.remove(e.getKey());
-                    printer(newMap, answer , expanded_eq);
+                    printer(newMap, answer, expanded_eq);
                 } else {
-                    if (!expanded_eq.contains(answer)){
+                    if (!expanded_eq.contains(answer)) {
                         System.out.println(answer);
                         expanded_eq.add(answer);
                     }
