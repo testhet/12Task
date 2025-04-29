@@ -3,10 +3,7 @@ package Task_12_Find_Conflict_and_nonconflict_entries_FromFiles;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
 
@@ -29,22 +26,16 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] s = line.toLowerCase().split("\\t");
-                if (s.length == 3) {
-                    String key = s[1] + "\t" + s[2];
-                    if (myMap.containsKey(key)) {
-                        myMap.get(key).add(s[0]);
+                String[] s = line.toLowerCase().split("\\t",2);
+                    if (myMap.containsKey(s[1])) {
+                        myMap.get(s[1]).add(s[0]);
                     } else {
-                        System.out.println("Unknown Combination: " + key);
+                        System.out.println("Unknown Combination: " + s[1]);
                     }
-                } else {
-                    System.out.println("Invalid Line: " + line);
-                }
             }
         } catch (IOException e) {
-            throw new RuntimeException("File reading failed", e);
+            System.err.println("File Not Found: "+ e.getMessage());
         }
-
         return myMap;
     }
 
@@ -58,8 +49,6 @@ public class Main {
         }
         return countMap;
     }
-
-
     private static void printResults(Map<String, Set<String>> myMap, Map<String, Integer> countMap) {
         Set<String> unique = new HashSet<>();
         Set<String> conflict = new HashSet<>();
@@ -69,22 +58,36 @@ public class Main {
             else conflict.add(entry.getKey());
         }
 
-        System.out.println("Unique Values:");
+        // For collecting sorted output
+        List<String> uniqueOutput = new ArrayList<>();
+        List<String> conflictOutput = new ArrayList<>();
+
         for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
             for (String value : entry.getValue()) {
+                String outputLine =  value+ "\t" + entry.getKey();
                 if (unique.contains(value)) {
-                    System.out.println(entry.getKey() + "\t" + value);
+                    uniqueOutput.add(outputLine);
+                } else if (conflict.contains(value)) {
+                    conflictOutput.add(outputLine);
                 }
             }
         }
 
+
+        uniqueOutput.sort(Comparator.comparing(line -> line.split("\\t")[0]));
+        conflictOutput.sort(Comparator.comparing(line -> line.split("\\t")[0]));
+
+
+        System.out.println("Unique Values:");
+        for (String line : uniqueOutput) {
+            System.out.println(line);
+        }
+
         System.out.println("\nConflict Values:");
-        for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
-            for (String value : entry.getValue()) {
-                if (conflict.contains(value)) {
-                    System.out.println(entry.getKey() + "\t" + value);
-                }
-            }
+        for (String line : conflictOutput) {
+            System.out.println(line);
         }
     }
+
+
 }
