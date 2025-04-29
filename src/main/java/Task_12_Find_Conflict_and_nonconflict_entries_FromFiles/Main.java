@@ -1,7 +1,6 @@
 package Task_12_Find_Conflict_and_nonconflict_entries_FromFiles;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,89 +11,78 @@ import java.util.Set;
 public class Main {
 
 
+    public static void main(String[] args) {
+        String filePath = "/home/hetgoti/Downloads/Problem_Input/12/Inputfile";
+        Map<String, Set<String>> myMap = readAndBuildMap(filePath);
+        Map<String, Integer> countMap = getCountMap(myMap);
+        printResults(myMap, countMap);
+    }
 
 
-    public static void main(String[] args) throws FileNotFoundException {
-
-
-        HashMap<String, Set<String>> myMap = new HashMap<>();
-
-        // Initialize keys
-        myMap.put("yes\tyes",new HashSet<>());
+    private static Map<String, Set<String>> readAndBuildMap(String filePath) {
+        Map<String, Set<String>> myMap = new HashMap<>();
+        myMap.put("yes\tyes", new HashSet<>());
         myMap.put("yes\tno", new HashSet<>());
         myMap.put("no\tyes", new HashSet<>());
         myMap.put("no\tno", new HashSet<>());
 
-
-        try(BufferedReader br = new BufferedReader(new FileReader("/home/hetgoti/Downloads/Problem_Input/12/Inputfile"))){
-            String strr;
-
-
-            while ((strr = br.readLine()) != null){
-                try{
-                    String str = strr.toLowerCase();
-                    String[] s = str.split("\\t");
-               if(s.length == 3){
-                   String key = s[1] + "\t" + s[2];
-                   if(myMap.containsKey(key)){
-                       myMap.get(key).add(s[0]);
-                   } else {
-                       System.out.println("Unknown Combination" + key);
-                   }
-               } else {
-                   System.out.println("Invalid Line" + str);
-               }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] s = line.toLowerCase().split("\\t");
+                if (s.length == 3) {
+                    String key = s[1] + "\t" + s[2];
+                    if (myMap.containsKey(key)) {
+                        myMap.get(key).add(s[0]);
+                    } else {
+                        System.out.println("Unknown Combination: " + key);
+                    }
+                } else {
+                    System.out.println("Invalid Line: " + line);
                 }
-
             }
-
-        } catch (RuntimeException | IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException("File reading failed", e);
         }
 
-        HashMap<String , Integer> countValue = new HashMap<>();
-        for (Set<String> set : myMap.values()){
-            for (String value : set){
-                countValue.put(value, countValue.getOrDefault(value , 0) + 1);
+        return myMap;
+    }
+
+
+    private static Map<String, Integer> getCountMap(Map<String, Set<String>> myMap) {
+        Map<String, Integer> countMap = new HashMap<>();
+        for (Set<String> values : myMap.values()) {
+            for (String val : values) {
+                countMap.put(val, countMap.getOrDefault(val, 0) + 1);
             }
         }
+        return countMap;
+    }
 
 
-        // To separate unique and conflict values
-        Set<String> uniqueValues = new HashSet<>();
-        Set<String> conflictValues = new HashSet<>();
+    private static void printResults(Map<String, Set<String>> myMap, Map<String, Integer> countMap) {
+        Set<String> unique = new HashSet<>();
+        Set<String> conflict = new HashSet<>();
 
-        // Iterate through the countMap to categorize values
-        for (Map.Entry<String, Integer> entry : countValue.entrySet()) {
-            if (entry.getValue() == 1) {
-                uniqueValues.add(entry.getKey());  // Value appears only once in the entire HashMap
-            } else {
-                conflictValues.add(entry.getKey());  // Value appears in multiple sets (conflict)
-            }
+        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+            if (entry.getValue() == 1) unique.add(entry.getKey());
+            else conflict.add(entry.getKey());
         }
 
-        // Print the results for unique values, along with the key
         System.out.println("Unique Values:");
         for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
-            String key = entry.getKey();
-            Set<String> values = entry.getValue();
-            for (String value : values) {
-                if (uniqueValues.contains(value)) {
-                    System.out.println(key + " -> " + value);  // Print key and unique value
+            for (String value : entry.getValue()) {
+                if (unique.contains(value)) {
+                    System.out.println(entry.getKey() + "\t" + value);
                 }
             }
         }
 
-        // Print the results for conflict values, along with the key
         System.out.println("\nConflict Values:");
         for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
-            String key = entry.getKey();
-            Set<String> values = entry.getValue();
-            for (String value : values) {
-                if (conflictValues.contains(value)) {
-                    System.out.println(key + " -> " + value);  // Print key and conflict value
+            for (String value : entry.getValue()) {
+                if (conflict.contains(value)) {
+                    System.out.println(entry.getKey() + "\t" + value);
                 }
             }
         }
