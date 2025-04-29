@@ -26,15 +26,15 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] s = line.toLowerCase().split("\\t",2);
-                    if (myMap.containsKey(s[1])) {
-                        myMap.get(s[1]).add(s[0]);
-                    } else {
-                        System.out.println("Unknown Combination: " + s[1]);
-                    }
+                String[] s = line.toLowerCase().split("\\t", 2);
+                if (myMap.containsKey(s[1])) {
+                    myMap.get(s[1]).add(s[0]);
+                } else {
+                    System.out.println("Unknown Combination: " + s[1]);
+                }
             }
         } catch (IOException e) {
-            System.err.println("File Not Found: "+ e.getMessage());
+            System.err.println("File Not Found: " + e.getMessage());
         }
         return myMap;
     }
@@ -49,6 +49,7 @@ public class Main {
         }
         return countMap;
     }
+
     private static void printResults(Map<String, Set<String>> myMap, Map<String, Integer> countMap) {
         Set<String> unique = new HashSet<>();
         Set<String> conflict = new HashSet<>();
@@ -57,14 +58,12 @@ public class Main {
             if (entry.getValue() == 1) unique.add(entry.getKey());
             else conflict.add(entry.getKey());
         }
-
-        // For collecting sorted output
         List<String> uniqueOutput = new ArrayList<>();
         List<String> conflictOutput = new ArrayList<>();
 
         for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
             for (String value : entry.getValue()) {
-                String outputLine =  value+ "\t" + entry.getKey();
+                String outputLine = value + "\t" + entry.getKey();
                 if (unique.contains(value)) {
                     uniqueOutput.add(outputLine);
                 } else if (conflict.contains(value)) {
@@ -72,22 +71,18 @@ public class Main {
                 }
             }
         }
-
-
-        uniqueOutput.sort(Comparator.comparing(line -> line.split("\\t")[0]));
-        conflictOutput.sort(Comparator.comparing(line -> line.split("\\t")[0]));
-
+        Collections.sort(uniqueOutput);
+        Collections.sort(conflictOutput);
 
         System.out.println("Unique Values:");
         for (String line : uniqueOutput) {
             System.out.println(line);
         }
 
-        System.out.println("\nConflict Values:");
+        System.out.println("---------------------------------------------------------------------------------------------------------------" +"\n---------------------------------------------------------------------------------------------------------------" + "\nConflict Values:");
         for (String line : conflictOutput) {
             System.out.println(line);
         }
     }
-
 
 }
