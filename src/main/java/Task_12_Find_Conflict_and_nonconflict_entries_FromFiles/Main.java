@@ -39,21 +39,19 @@ public class Main {
         List<String> conflictOutput = new ArrayList<>();
 
         for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
-            if (entry.getValue().size() == 1) {
-                String unique = (entry.getKey() + " -> " + entry.getValue());
+            String key = entry.getKey();
+            Set<String> values = entry.getValue();
+
+            if (values.size() == 1) {
+                String unique = key + "\t\t" + values.iterator().next();
                 uniqueOutput.add(unique);
-
-
+            } else {
+                for (String value : values) {
+                    conflictOutput.add(key + "\t\t" + value);
+                }
             }
         }
 
-
-        for (Map.Entry<String, Set<String>> entry : myMap.entrySet()) {
-            if (entry.getValue().size() > 1) {
-                String conflict = (entry.getKey() + " -> " + entry.getValue());
-                conflictOutput.add(conflict);
-            }
-        }
         Collections.sort(uniqueOutput);
         Collections.sort(conflictOutput);
 
@@ -62,12 +60,10 @@ public class Main {
             System.out.println(unique);
         }
 
-        // Print sorted conflicting values
+
         System.out.println("Conflicting Values:");
         for (String conflict : conflictOutput) {
             System.out.println(conflict);
         }
-
     }
-
 }
