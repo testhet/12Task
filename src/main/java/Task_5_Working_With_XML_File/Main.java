@@ -25,7 +25,7 @@ public class Main {
 
         try (Stream<Path> files = Files.walk(filePath)) {
             files.filter(Files::isRegularFile).forEach(path -> {
-                System.out.println("reading : "  + path.getFileName());
+                System.out.println("reading : " + path.getFileName());
                 try {
 
                     //can use File inputFile = path.toFile() also but toURI() will add safety like converts space in to %20 encode # and ?
@@ -49,11 +49,11 @@ public class Main {
                             Element bestCode = getElement(icdElement);
 
 
-                                String codeValue = bestCode.getAttribute("value");
-                                String rankValue = bestCode.getAttribute("rank");
+                            String codeValue = bestCode.getAttribute("value");
+                            String rankValue = bestCode.getAttribute("rank");
 
-                                System.out.print("Code: " + codeValue);
-                                System.out.println(" Rank: " + rankValue);
+                            System.out.print("Code: " + codeValue);
+                            System.out.println(" Rank: " + rankValue);
 
                         }
                     }
@@ -62,7 +62,7 @@ public class Main {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace(); // Better than RuntimeException for debugging
+            e.printStackTrace();
         }
     }
 
@@ -96,7 +96,7 @@ public class Main {
 
                 codeWithMaxRank.add(codeElement);
             }
-            if(!codeWithMaxRank.isEmpty()){
+            if (!codeWithMaxRank.isEmpty()) {
                 Random random = new Random();
                 int arrSize = codeWithMaxRank.size();
                 int randomCode = random.nextInt(arrSize);

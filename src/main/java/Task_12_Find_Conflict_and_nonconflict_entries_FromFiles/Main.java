@@ -43,11 +43,11 @@ public class Main {
             Set<String> values = entry.getValue();
 
             if (values.size() == 1) {
-                String unique = key + "\t\t" + values.iterator().next();
+                String unique = key + "\t" + values.iterator().next();
                 uniqueOutput.add(unique);
             } else {
                 for (String value : values) {
-                    conflictOutput.add(key + "\t\t" + value);
+                    conflictOutput.add(key + "\t" + value);
                 }
             }
         }
