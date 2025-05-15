@@ -6,10 +6,9 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main {
+
     static Deque<String> queue = new ArrayDeque<>();
-
     static String code = "";
-
     public static void main(String[] args) {
 
         String str;
@@ -18,7 +17,6 @@ public class Main {
         try {
             FileReader fr = new FileReader("/home/hetgoti/Downloads/Problem_Input/7/InputFile");
             BufferedReader br = new BufferedReader(fr);
-
             while ((str = br.readLine()) != null) {
                 str = str.split("@@")[0];
                 if (!str.contains("\t")) {
@@ -75,5 +73,3 @@ public class Main {
         }
     }
 }
-
-
